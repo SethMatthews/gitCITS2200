@@ -28,8 +28,15 @@ public class CITS2200ProjectTester {
 		// Load the graph into the project.
 		loadGraph(proj, pathToGraphFile);
 		for(int i=0; i<proj.graph.size(); i++) {
-			System.out.println(proj.graph.get(i));
+			for(int j=0; j<proj.graph.size(); j++) {
+				System.out.println((Integer.toString(i)) + " to " + Integer.toString(j) + " shortestPath: " + Integer.toString(proj.getShortestPath(proj.mapA.get(i), proj.mapA.get(j))));
+			}
 		}
+		String[] centers = proj.getCenters();
+		for(int i=0; i<centers.length; i++) {
+			System.out.println(centers[i]);
+		}
+
 
 		// Write your own tests!
 		System.out.println(Integer.toString(proj.getShortestPath("/wiki/Flow_network", "/wiki/Ford%E2%80%93Fulkerson_algorithm")));
