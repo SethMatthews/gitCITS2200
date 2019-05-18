@@ -258,11 +258,12 @@ public class MyCITS2200Project implements CITS2200Project {
 			}
 		}
 		visited.clear();
-		//System.out.println(graphTranspose.size());
-		//System.out.println(graph.size());
 		while(!vertStack.empty()) {
 			Stack<Integer> tempStack = new Stack<Integer>();
-			alComponents.add(depthFirstSearch(vertStack.pop(),tempStack,graphTranspose));
+			tempStack = depthFirstSearch(vertStack.pop(),tempStack,graphTranspose);
+			if(tempStack.size()>1) {
+				alComponents.add(tempStack);
+			}
 		}
 		String[][] components = sccConversion(alComponents);
 		return components;

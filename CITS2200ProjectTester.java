@@ -45,6 +45,9 @@ public class CITS2200ProjectTester {
 			}
 			System.out.println("");		
 		}
+		String str1 = "hey";
+		String str2 = "hey"+null;
+		System.out.println(str1==str2);
 
 
 		// Write your own tests!
