@@ -91,22 +91,29 @@ public class MyCITS2200Project implements CITS2200Project {
 
 	}
 
-
+	//gets shortest path from urlFrom to urlTo
 	public int getShortestPath(String urlFrom, String urlTo) {
 		int rootNode = mapB.get(urlFrom);
 		int finalNode = mapB.get(urlTo);
+		
+		//HashMap used to store depth of each node from root node
 		HashMap<Integer,Integer> depth = new HashMap<Integer,Integer>();
+		//Queue to hold discovered vertexes that need to be explored in the depth first search
 		Queue<Integer> queue = new LinkedList<Integer>();
 
+		//adds root node to the queue and sets its depth to 0 in the HashMap
 		queue.add(rootNode);
 		depth.put(rootNode,0);
 
+		//Breadth first search implementation to test form matches to the goal node
 		while(!(queue.size()==0)) {
 			int currentNode = queue.remove();
 			if(currentNode == finalNode) {
+				//returns target node depth when node is found
 				return depth.get(currentNode);
 			}
 
+			//tests if the current node has children and if so, adds unexplored nodes to the queue to be searched
 			ArrayList<Integer> currentNodeChildren = graph.get(currentNode);
 			if(currentNodeChildren!=null) {
 				for(Integer i=0; i<currentNodeChildren.size(); i++) {
@@ -118,10 +125,13 @@ public class MyCITS2200Project implements CITS2200Project {
 				}
 			}
 		}
+		//Returns -1 if no matching node to the target node can be found
 		return -1;
 
 	}
 
+
+	//Function for printing matrixes (NOT FOR FINAL PROGRAM)
 	public void printMatrix(int[][] matrix) {
 	    for (int row = 0; row < matrix.length; row++) {
 	        for (int col = 0; col < matrix[row].length; col++) {
@@ -131,6 +141,7 @@ public class MyCITS2200Project implements CITS2200Project {
 	    }
     }
 
+    //Function for printing ArrayLists (NOT FOR FINAL PROGRAM)
     public void printArrayList(ArrayList<ArrayList<Integer>> a) {
     	for(int i=0; i<a.size(); i++) {
     		System.out.println(a.get(i));
@@ -138,13 +149,17 @@ public class MyCITS2200Project implements CITS2200Project {
     	System.out.println("");
     }
 
+    //Takes graph ArrayList and converts it into an adjacency list for use in the Floyd algorithm
 	public int[][] getAdjMatrix () {
 
 		int[][] adjacency = new int[graph.size()][graph.size()];
+		
+		//Loop through all nodes and their children to test for adjacency between nodes
+		//0 indicates adjacency[x][x] (a vertexes adjacency to itself)
+		//1 indicates that x is adjacent to y for adjacency[x][y]
+		//999 indicates y is non adjacent to y for adjacency[x][y]
 		for(int i=0; i<graph.size(); i++) {
 			ArrayList<Integer> adjacencyList = graph.get(i);
-
-			//if adjacenyList.contins(j) set to 
 			for(int j=0; j<graph.size(); j++) {
 				if(i==j) {
 					adjacency[i][j]=0;
@@ -163,6 +178,8 @@ public class MyCITS2200Project implements CITS2200Project {
 		return adjacency;
 	}
 
+	//Finds Floyd matrix given an adjacency matrix
+	//Floyd matrix is the shortest path from any node to another
 	private static int[][] getFloydMatrix (int[][] a) {
 
 		int size = a.length;
@@ -178,49 +195,64 @@ public class MyCITS2200Project implements CITS2200Project {
 		return a;
 	}
 
-
+	//Simple function to convert an ArrayList of Strings to a String array
 	private String[] converter(ArrayList<String> s) {
 		Object[] centers = s.toArray();
         String[] strCenters = Arrays.copyOf(centers, centers.length, String[].class);
         return strCenters;
 	}
 
+	//Function to find the vertexes that are centers of the graph
 	public String[] getCenters() {
 		
+		//call to the adjacency matrix function to get the matrix needed for the floyd function
 		int[][] adjacency = getAdjMatrix();
+		//call to the floyd function to return the matrix needed to calculate centers
 		int[][] floyd = getFloydMatrix(adjacency);
-		printMatrix(floyd);
+
+		//set initial most jumps variable to set the number a potential center has to 'beat'
 		int mostJumps = 999;
+
+		//for each row of the floyd matrix (node of the graph), test whether it is a center
 		ArrayList<String> potentialCenter = new ArrayList<String>();
 		for (int i=0; i<floyd.length; i++) {
+			int potentialMJ = 0;
 			for(int j=0; j<floyd.length; j++) {
-				int potentialMJ = 0;
+				//first, test if any values are 999 indicating a node is unreachable or if any node is larger than the recorded MJ. If true, break and process the next node
 				if(floyd[i][j] == 999 || floyd[i][j] > mostJumps) {
 					break;
 				}
+				//take note of the highest value in the node and store it in potentialMJ
 				else if(floyd[i][j]>potentialMJ) {
 					potentialMJ = floyd[i][j];
 				}
 				if(j==floyd.length-1) {
+					//if PotentialMJ is less than mostJumps, clear the pottentialCenter ArrayList and add the current node as a better potential center
 					if(potentialMJ<mostJumps) {
 						mostJumps = potentialMJ;
 						potentialCenter.clear();
 						potentialCenter.add(mapA.get(i));
 					}
+					//if potentialMJ is equal to mostJumps, add the current node to the list of potential centers
 					else if(potentialMJ == mostJumps) {
 						potentialCenter.add(mapA.get(i));
 					}
 				}
 			}
 		}
+		//convert and return the final list of centers
 		String[] strCenters = converter(potentialCenter);
 		return strCenters;
 	}
 
+	//implementation of a recursive depth first search that returns a stack for further processing
 	private Stack<Integer> depthFirstSearch(int vertex, Stack<Integer> vertStack, ArrayList<ArrayList<Integer>> searchGraph) {
 
+		//find all children of the current node
 		ArrayList<Integer> children = searchGraph.get(vertex);
+		//mark the current node as visited
 		visited.put(vertex,true);
+		//while the current node is not a leaf, recursively call another DFS on its children
 		if(children!=null) {
 			for(int i=0; i<children.size(); i++) {
 				if(!visited.containsKey(children.get(i))) {
@@ -228,10 +260,12 @@ public class MyCITS2200Project implements CITS2200Project {
 				}
 			}
 		}
+		//when a leaf is found, push it onto the stack and return it
 		vertStack.push(vertex);
 		return vertStack;
     } 
 
+    //converts the stack returned by the secondary DFS on the Transposed graph into the required 2D string array
     public String[][] sccConversion (ArrayList<Stack<Integer>> components) {
     	String[][] convertedComponents = new String[graph.size()][graph.size()];
     	for(int i=0; i<components.size(); i++) {
@@ -246,25 +280,39 @@ public class MyCITS2200Project implements CITS2200Project {
     	return convertedComponents;
     }
 
+    //finds strongly connected components in the graph
 	public String[][] getStronglyConnectedComponents() {
+		
+		//create an arraylist that will eventually contain stacks of strongly connected components
 		ArrayList<Stack<Integer>> alComponents = new ArrayList<Stack<Integer>>();
+		//stack to hold results from DFS
 		Stack<Integer> vertStack = new Stack<Integer>();
+		//Perform DFS on graph nodes until all nodes are in the vertStack
 		for(int i=0; i<graph.size(); i++) {
+			//break if all nodes are in the stack
 			if(visited.size()==graph.size()) {
 				break;
 			}
+			//DFS from the current node if it's not in the stack
 			if(!visited.containsKey(i)) {
 				vertStack = depthFirstSearch(i,vertStack,graph);
 			}
 		}
+		//clear the visited list in preparation for the second DFS with the Transposed graph
 		visited.clear();
+		//while there are still nodes to be processed, perform DFS on each node popped from the stack
 		while(!vertStack.empty()) {
-			Stack<Integer> tempStack = new Stack<Integer>();
-			tempStack = depthFirstSearch(vertStack.pop(),tempStack,graphTranspose);
-			if(tempStack.size()>1) {
-				alComponents.add(tempStack);
+			int currNode = vertStack.pop();
+			//check if currentNode has been visited and don't process if it has
+			if(!visited.containsKey(currNode)) {
+				Stack<Integer> tempStack = new Stack<Integer>();
+				tempStack = depthFirstSearch(currNode,tempStack,graphTranspose);
+				if(tempStack.size()>1) {
+					alComponents.add(tempStack);
+				}
 			}
 		}
+		//convert components to the required form and return them
 		String[][] components = sccConversion(alComponents);
 		return components;
 	}
