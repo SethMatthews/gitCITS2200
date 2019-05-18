@@ -36,6 +36,7 @@ public class CITS2200ProjectTester {
 		for(int i=0; i<centers.length; i++) {
 			System.out.println(centers[i]);
 		}
+		proj.getStronglyConnectedComponents()
 
 
 		// Write your own tests!

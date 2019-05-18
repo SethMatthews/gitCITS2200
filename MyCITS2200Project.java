@@ -12,11 +12,13 @@ public class MyCITS2200Project implements CITS2200Project {
 	public ArrayList<ArrayList<Integer>> graph;
 	public HashMap<Integer,String> mapA;
 	public HashMap<String,Integer> mapB;
+	public HashMap<Integer,Boolean> visited;
 	//private ArrayList<Int> neighbours;
 
 	public MyCITS2200Project () {
 		this.mapA = new HashMap<Integer,String>();
 		this.mapB = new HashMap<String,Integer>();
+		this.visited = new HashMap<Integer,Boolean>();
 		this.graph= new ArrayList<ArrayList<Integer>>();	//lists of each index's neighbours
 		//this.neighbours = new ArrayList<Int>();
 		}
@@ -184,9 +186,45 @@ public class MyCITS2200Project implements CITS2200Project {
 		return strCenters;
 	}
 
-	public String[][] getStronglyConnectedComponents() {
-		return null;
+	private Stack depthFirstSearch(int vertex, Stack vertStack) {
 
+		ArrayList<Integer> children = graph.get(vertex);
+		visited.put(vertex,true);
+		if(children.size()!=null) {
+			for(int i=0; i<children.size(); i++) {
+				if(!visited.get(vertex)) {
+					depthFirstSearch(children.get(i),vertStack);
+				}
+			}
+			vertStack.push(i);
+			return vertStack;
+		}
+		else {
+			vertStack.push(i);
+			return vertStack;
+		}
+    } 
+  
+
+    private ArrayList<ArrayList<Integer>> getTranspose() { 
+
+    } 
+  
+    void fillOrder(int v, boolean visited[], Stack stack) { 
+
+    } 
+
+	public String[][] getStronglyConnectedComponents() {
+		Stack<Integer> vertStack = new Stack<Integer>();
+		for(int i=0; i<graph.(size); i++) {
+			if(visited.size()==graph.size()) {
+				break;
+			}
+			if(!visited.containsKey(i)) {
+				vertStack = depthFirstSearch(i,vertStack);
+			}
+		}
+		System.out.println(vertStack);
 	}
 
 	public String[] getHamiltonianPath() {
