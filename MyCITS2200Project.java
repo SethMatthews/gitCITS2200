@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap; // import the HashMap class
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 public class MyCITS2200Project implements CITS2200Project {
 
@@ -186,28 +187,24 @@ public class MyCITS2200Project implements CITS2200Project {
 		return strCenters;
 	}
 
-	private Stack depthFirstSearch(int vertex, Stack vertStack) {
+	private Stack<Integer> depthFirstSearch(int vertex, Stack<Integer> vertStack) {
 
 		ArrayList<Integer> children = graph.get(vertex);
 		visited.put(vertex,true);
-		if(children.size()!=null) {
+		if(children!=null) {
 			for(int i=0; i<children.size(); i++) {
 				if(!visited.get(vertex)) {
 					depthFirstSearch(children.get(i),vertStack);
 				}
 			}
-			vertStack.push(i);
-			return vertStack;
 		}
-		else {
-			vertStack.push(i);
-			return vertStack;
-		}
+		vertStack.push(vertex);
+		return vertStack;
     } 
   
 
     private ArrayList<ArrayList<Integer>> getTranspose() { 
-
+    	return null;
     } 
   
     void fillOrder(int v, boolean visited[], Stack stack) { 
@@ -215,16 +212,24 @@ public class MyCITS2200Project implements CITS2200Project {
     } 
 
 	public String[][] getStronglyConnectedComponents() {
+		String[][] components = new String[1][1];
 		Stack<Integer> vertStack = new Stack<Integer>();
-		for(int i=0; i<graph.(size); i++) {
+		for(int i=graph.size()-1; i>=0; i--) {
+			System.out.println("found stack loop:");
+			System.out.println(vertStack);
+
 			if(visited.size()==graph.size()) {
 				break;
 			}
 			if(!visited.containsKey(i)) {
+				System.out.println(i);
+				System.out.println(visited);
 				vertStack = depthFirstSearch(i,vertStack);
 			}
 		}
+		System.out.println("found stack:");
 		System.out.println(vertStack);
+		return components;
 	}
 
 	public String[] getHamiltonianPath() {

@@ -22,7 +22,7 @@ public class CITS2200ProjectTester {
 
 	public static void main(String[] args) {
 		// Change this to be the path to the graph file.
-		String pathToGraphFile = "/Users/sethmatthews/Documents/Uni/CITS2200/Project/example_graph.txt";
+		String pathToGraphFile = "C:/Users/User/Documents/GitHub/gitCITS2200/example_graph.txt";
 		// Create an instance of your implementation.
 		MyCITS2200Project proj = new MyCITS2200Project();
 		// Load the graph into the project.
@@ -36,7 +36,7 @@ public class CITS2200ProjectTester {
 		for(int i=0; i<centers.length; i++) {
 			System.out.println(centers[i]);
 		}
-		proj.getStronglyConnectedComponents()
+		proj.getStronglyConnectedComponents();
 
 
 		// Write your own tests!
