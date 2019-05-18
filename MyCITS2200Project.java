@@ -193,7 +193,7 @@ public class MyCITS2200Project implements CITS2200Project {
 		visited.put(vertex,true);
 		if(children!=null) {
 			for(int i=0; i<children.size(); i++) {
-				if(!visited.get(vertex)) {
+				if(!visited.containsKey(children.get(i))) {
 					depthFirstSearch(children.get(i),vertStack);
 				}
 			}
@@ -214,16 +214,11 @@ public class MyCITS2200Project implements CITS2200Project {
 	public String[][] getStronglyConnectedComponents() {
 		String[][] components = new String[1][1];
 		Stack<Integer> vertStack = new Stack<Integer>();
-		for(int i=graph.size()-1; i>=0; i--) {
-			System.out.println("found stack loop:");
-			System.out.println(vertStack);
-
+		for(int i=0; i<graph.size(); i++) {
 			if(visited.size()==graph.size()) {
 				break;
 			}
 			if(!visited.containsKey(i)) {
-				System.out.println(i);
-				System.out.println(visited);
 				vertStack = depthFirstSearch(i,vertStack);
 			}
 		}
