@@ -11,6 +11,7 @@ import java.util.Stack;
 public class MyCITS2200Project implements CITS2200Project {
 
 	public ArrayList<ArrayList<Integer>> graph;
+	public ArrayList<ArrayList<Integer>> graphTranspose;
 	public HashMap<Integer,String> mapA;
 	public HashMap<String,Integer> mapB;
 	public HashMap<Integer,Boolean> visited;
@@ -21,6 +22,7 @@ public class MyCITS2200Project implements CITS2200Project {
 		this.mapB = new HashMap<String,Integer>();
 		this.visited = new HashMap<Integer,Boolean>();
 		this.graph= new ArrayList<ArrayList<Integer>>();	//lists of each index's neighbours
+		this.graphTranspose= new ArrayList<ArrayList<Integer>>();
 		//this.neighbours = new ArrayList<Int>();
 		}
 
@@ -53,18 +55,29 @@ public class MyCITS2200Project implements CITS2200Project {
 		int vertIndexFrom = mapB.get(urlFrom); //convert urlFrom to an index through hashmap
 		
 		while(graph.size()-1<vertIndexFrom) {
-			graph.add(null);
+			graph.add(null);	
 		}
-		
 		if(graph.get(vertIndexFrom)==null) {
 			ArrayList<Integer> newVert = new ArrayList<Integer>();
 			newVert.add(vertIndexTo);
-			//System.out.println("Boutta add at index " + Integer.toString(vertIndexFrom) + " with graph size: " + Integer.toString(graph.size()));
 			graph.set(vertIndexFrom, newVert);
+			
 			//System.out.println("Add successful!");
 		}
 		else {
 			graph.get(vertIndexFrom).add(vertIndexTo); //appends vertex(urlTo) in vertex(urlFrom) neighbour list
+		}
+
+		while(graphTranspose.size()-1<vertIndexTo){
+			graphTranspose.add(null);
+		}
+		if(graphTranspose.get(vertIndexTo)==null){
+			ArrayList<Integer> newVertTranspose = new ArrayList<Integer>();
+			newVertTranspose.add(vertIndexFrom);
+			graphTranspose.set(vertIndexTo,newVertTranspose);
+		}
+		else {
+			graphTranspose.get(vertIndexTo).add(vertIndexFrom);
 		}
 	}
 
@@ -108,7 +121,14 @@ public class MyCITS2200Project implements CITS2200Project {
 	    }
     }
 
-	private int[][] getAdjMatrix () {
+    public void printArrayList(ArrayList<ArrayList<Integer>> a) {
+    	for(int i=0; i<a.size(); i++) {
+    		System.out.println(a.get(i));
+    	}
+    	System.out.println("");
+    }
+
+	public int[][] getAdjMatrix () {
 
 		int[][] adjacency = new int[graph.size()][graph.size()];
 		for(int i=0; i<graph.size(); i++) {

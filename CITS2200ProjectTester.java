@@ -22,24 +22,26 @@ public class CITS2200ProjectTester {
 
 	public static void main(String[] args) {
 		// Change this to be the path to the graph file.
-		String pathToGraphFile = "C:/Users/User/Documents/GitHub/gitCITS2200/example_graph.txt";
+		String pathToGraphFile = "/Users/sethmatthews/Documents/GitHub/gitCITS2200/example_graph.txt";
 		// Create an instance of your implementation.
 		MyCITS2200Project proj = new MyCITS2200Project();
 		// Load the graph into the project.
 		loadGraph(proj, pathToGraphFile);
-		for(int i=0; i<proj.graph.size(); i++) {
-			for(int j=0; j<proj.graph.size(); j++) {
-				System.out.println((Integer.toString(i)) + " to " + Integer.toString(j) + " shortestPath: " + Integer.toString(proj.getShortestPath(proj.mapA.get(i), proj.mapA.get(j))));
-			}
-		}
-		String[] centers = proj.getCenters();
-		for(int i=0; i<centers.length; i++) {
-			System.out.println(centers[i]);
-		}
-		proj.getStronglyConnectedComponents();
+		proj.printArrayList(proj.graph);
+		proj.printArrayList(proj.graphTranspose);
+		//for(int i=0; i<proj.graph.size(); i++) {
+		//	for(int j=0; j<proj.graph.size(); j++) {
+		//		System.out.println((Integer.toString(i)) + " to " + Integer.toString(j) + " shortestPath: " + Integer.toString(proj.getShortestPath(proj.mapA.get(i), proj.mapA.get(j))));
+		//	}
+		//}
+		//String[] centers = proj.getCenters();
+		//for(int i=0; i<centers.length; i++) {
+		//	System.out.println(centers[i]);
+		//}
+		//proj.getStronglyConnectedComponents();
 
 
 		// Write your own tests!
-		System.out.println(Integer.toString(proj.getShortestPath("/wiki/Flow_network", "/wiki/Ford%E2%80%93Fulkerson_algorithm")));
+		//System.out.println(Integer.toString(proj.getShortestPath("/wiki/Flow_network", "/wiki/Ford%E2%80%93Fulkerson_algorithm")));
 	}
 }
