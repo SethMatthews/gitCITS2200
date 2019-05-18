@@ -1,4 +1,4 @@
-//CITS2200 Project - 21973441 & SETHNUMBER
+//CITS2200 Project - 21973441 & 22244433
 
 
 import java.util.Arrays;
@@ -53,32 +53,42 @@ public class MyCITS2200Project implements CITS2200Project {
 
 		int vertIndexTo = mapB.get(urlTo); //convert urlTo to an index through hashmap
 		int vertIndexFrom = mapB.get(urlFrom); //convert urlFrom to an index through hashmap
-		
-		while(graph.size()-1<vertIndexFrom) {
+		System.out.println(Integer.toString(vertIndexFrom) + ", " + Integer.toString(vertIndexTo));
+
+		while(graph.size()<mapA.size()) {
 			graph.add(null);	
 		}
 		if(graph.get(vertIndexFrom)==null) {
 			ArrayList<Integer> newVert = new ArrayList<Integer>();
 			newVert.add(vertIndexTo);
 			graph.set(vertIndexFrom, newVert);
+			System.out.println(graph.get(vertIndexFrom));
 			
 			//System.out.println("Add successful!");
 		}
 		else {
 			graph.get(vertIndexFrom).add(vertIndexTo); //appends vertex(urlTo) in vertex(urlFrom) neighbour list
+			System.out.println(graph.get(vertIndexFrom));
 		}
 
-		while(graphTranspose.size()-1<vertIndexTo){
+		while(graphTranspose.size()<mapA.size()){
 			graphTranspose.add(null);
 		}
 		if(graphTranspose.get(vertIndexTo)==null){
 			ArrayList<Integer> newVertTranspose = new ArrayList<Integer>();
 			newVertTranspose.add(vertIndexFrom);
 			graphTranspose.set(vertIndexTo,newVertTranspose);
+			System.out.println(graphTranspose.get(vertIndexTo));
 		}
 		else {
 			graphTranspose.get(vertIndexTo).add(vertIndexFrom);
+			System.out.println(graphTranspose.get(vertIndexTo));
 		}
+		//System.out.println(graph.get(vertIndexFrom));
+		//System.out.println(graphTranspose.get(vertIndexTo));
+		System.out.println("Graph: " + Integer.toString(graph.size()) + ", TransposeGraph: " + Integer.toString(graphTranspose.size()));
+		System.out.println("");
+
 	}
 
 
@@ -207,43 +217,54 @@ public class MyCITS2200Project implements CITS2200Project {
 		return strCenters;
 	}
 
-	private Stack<Integer> depthFirstSearch(int vertex, Stack<Integer> vertStack) {
+	private Stack<Integer> depthFirstSearch(int vertex, Stack<Integer> vertStack, ArrayList<ArrayList<Integer>> searchGraph) {
 
-		ArrayList<Integer> children = graph.get(vertex);
+		ArrayList<Integer> children = searchGraph.get(vertex);
 		visited.put(vertex,true);
 		if(children!=null) {
 			for(int i=0; i<children.size(); i++) {
 				if(!visited.containsKey(children.get(i))) {
-					depthFirstSearch(children.get(i),vertStack);
+					depthFirstSearch(children.get(i),vertStack,searchGraph);
 				}
 			}
 		}
 		vertStack.push(vertex);
 		return vertStack;
     } 
-  
 
-    private ArrayList<ArrayList<Integer>> getTranspose() { 
-    	return null;
-    } 
-  
-    void fillOrder(int v, boolean visited[], Stack stack) { 
-
-    } 
+    public String[][] sccConversion (ArrayList<Stack<Integer>> components) {
+    	String[][] convertedComponents = new String[graph.size()][graph.size()];
+    	for(int i=0; i<components.size(); i++) {
+    		int j=0;
+    		Stack<Integer> currStack = components.get(i);
+    		while(!currStack.empty()) {
+    			String url = mapA.get(currStack.pop());
+    			convertedComponents[i][j] = url;
+    			j++;
+    		}
+    	}
+    	return convertedComponents;
+    }
 
 	public String[][] getStronglyConnectedComponents() {
-		String[][] components = new String[1][1];
+		ArrayList<Stack<Integer>> alComponents = new ArrayList<Stack<Integer>>();
 		Stack<Integer> vertStack = new Stack<Integer>();
 		for(int i=0; i<graph.size(); i++) {
 			if(visited.size()==graph.size()) {
 				break;
 			}
 			if(!visited.containsKey(i)) {
-				vertStack = depthFirstSearch(i,vertStack);
+				vertStack = depthFirstSearch(i,vertStack,graph);
 			}
 		}
-		System.out.println("found stack:");
-		System.out.println(vertStack);
+		visited.clear();
+		//System.out.println(graphTranspose.size());
+		//System.out.println(graph.size());
+		while(!vertStack.empty()) {
+			Stack<Integer> tempStack = new Stack<Integer>();
+			alComponents.add(depthFirstSearch(vertStack.pop(),tempStack,graphTranspose));
+		}
+		String[][] components = sccConversion(alComponents);
 		return components;
 	}
 
