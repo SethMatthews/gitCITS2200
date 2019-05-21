@@ -329,15 +329,46 @@ public class MyCITS2200Project implements CITS2200Project {
 		return (binNumber &= ~(1 << n));
 	}
 
-	public int notIn ( )
+	public boolean notIn (int n, int binNumber) {
+		return (((1<<n) & binNumber)==0);
+	}
+
+	public int[] hamiltonianSearch (int start, int state, int END_STATE) {
+
+		int[] currState = new int[]{start,state};
+		if(notIn(start, state) && visited.containsKey(state)==false) {
+			state=flipNth(state,start);
+			visited.put(state,true);
+			if(state==END_STATE){
+				currState[1]=state;
+				return currState;
+			}
+		}
+		else{
+			return null;
+		}
+		ArrayList<Integer> children = graph.get(start);
+		if(children!=null) {
+			for(int i=0; i<children.size(); i++) {
+				currState=hamiltonianSearch(children.get(i),state,END_STATE);
+			}
+		}
+		System.out.println("here");
+		return currState;
+	}
 
 	public String[] getHamiltonianPath() {
 		
-		final Double END_STATE = flipNth(~(1<<graph.size()),graph.size());
-		Double[][] memo = new Double[graph.size()][END_STATE];
+		final int END_STATE = (1<<graph.size())-1;
+		System.out.println(Integer.toString(END_STATE));
+		visited.clear();
 
-		for(int n=0; n<graph.size(); n++) {
-			
+		for(int i=0; i<graph.size(); i++) {
+			int[] result=hamiltonianSearch(i,0,END_STATE);
+			if(result!=null) {
+				System.out.println(Integer.toString(result[1]));
+				return(null);
+			}
 		}
 
 		return null;
