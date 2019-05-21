@@ -315,9 +315,31 @@ public class MyCITS2200Project implements CITS2200Project {
 		//convert components to the required form and return them
 		String[][] components = sccConversion(alComponents);
 		return components;
+	} 
+
+	public int flipNth (int binNumber, int n) {
+		return (binNumber ^ (1 << n));
 	}
 
+	public int setNth1 (int binNumber, int n) {
+		return (binNumber |= (1 << n));
+	}
+
+	public int setNth0 (int binNumber, int n) {
+		return (binNumber &= ~(1 << n));
+	}
+
+	public int notIn ( )
+
 	public String[] getHamiltonianPath() {
+		
+		final Double END_STATE = flipNth(~(1<<graph.size()),graph.size());
+		Double[][] memo = new Double[graph.size()][END_STATE];
+
+		for(int n=0; n<graph.size(); n++) {
+			
+		}
+
 		return null;
 
 	}
