@@ -15,6 +15,8 @@ public class MyCITS2200Project implements CITS2200Project {
 	public HashMap<Integer,String> mapA;
 	public HashMap<String,Integer> mapB;
 	public HashMap<Integer,Boolean> visited;
+	public boolean[][] bitCheck;
+	public int[][] adjacency;
 	//private ArrayList<Int> neighbours;
 
 	public MyCITS2200Project () {
@@ -206,7 +208,7 @@ public class MyCITS2200Project implements CITS2200Project {
 	public String[] getCenters() {
 		
 		//call to the adjacency matrix function to get the matrix needed for the floyd function
-		int[][] adjacency = getAdjMatrix();
+		adjacency = getAdjMatrix();
 		//call to the floyd function to return the matrix needed to calculate centers
 		int[][] floyd = getFloydMatrix(adjacency);
 
@@ -333,43 +335,58 @@ public class MyCITS2200Project implements CITS2200Project {
 		return (((1<<n) & binNumber)==0);
 	}
 
-	public int[] hamiltonianSearch (int start, int state, int END_STATE) {
+	public int getNext (int n, int binNumber) {
 
-		int[] currState = new int[]{start,state};
-		if(notIn(start, state) && visited.containsKey(state)==false) {
-			state=flipNth(state,start);
-			System.out.println(Integer.toBinaryString(state));
-			visited.put(state,true);
-			if(state==END_STATE){
-				currState[1]=state;
-				return currState;
+		System.out.println("");
+		System.out.println("Starting search with current node: " + Integer.toString(n));
+		System.out.println("and binary string: " + Integer.toBinaryString(binNumber));
+		System.out.println("");
+
+		if(binNumber==-1 || binNumber==(1<<graph.size())-1){
+			return binNumber;
+		}
+		for(int i=0; i<graph.size(); i++) {
+			if(!notIn(i,binNumber)) {
+				System.out.println("continued as " + Integer.toString(i) + " was already in the string");
+				continue;
+			}
+			if(bitCheck[i][setNth1(binNumber,i)]) {
+				System.out.println("very sad");
+				return(-1);
+			}
+			if(adjacency[i][n]==1) {
+				binNumber=setNth1(binNumber,i);
+				bitCheck[i][binNumber]=true;
+				System.out.println("boutta recurse");
+				int tempSolution = getNext(i,binNumber);
+				System.out.println(Integer.toBinaryString(tempSolution));
+				if(tempSolution==(1<<graph.size())-1) {
+					return tempSolution;
+				}
+				binNumber=setNth0(binNumber,i);
 			}
 		}
-		else{
-			return null;
-		}
-		ArrayList<Integer> children = graph.get(start);
-		if(children!=null) {
-			for(int i=0; i<children.size(); i++) {
-				currState=hamiltonianSearch(children.get(i),state,END_STATE);
-			}
-		}
-		System.out.println("here");
-		return currState;
+		System.out.println("");
+		System.out.println("recursion complete");
+		System.out.println(Integer.toBinaryString(binNumber));
+		System.out.println("");
+		return binNumber;
 	}
 
 	public String[] getHamiltonianPath() {
 		
 		final int END_STATE = (1<<graph.size())-1;
 		System.out.println(Integer.toBinaryString(END_STATE));
-		visited.clear();
+		printMatrix(adjacency = getAdjMatrix());
+		bitCheck = new boolean[graph.size()][1<<graph.size()];
 
-		int[] result= new int[2];
+		int result;
 		for(int i=0; i<graph.size(); i++) {
-			result=hamiltonianSearch(i,0,END_STATE);
+			result = getNext(i,1<<i);
+			if(result==END_STATE) {
+				System.out.println("success");
+			}
 		}
-		System.out.println(Integer.toString(result[1]));
-
 		return null;
 
 	}

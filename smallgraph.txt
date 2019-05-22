@@ -1,0 +1,12 @@
+apple
+banana
+apple
+car
+banana
+duck
+banana
+car
+car
+duck
+duck
+elephant
