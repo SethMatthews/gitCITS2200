@@ -15,7 +15,7 @@ public class MyCITS2200Project implements CITS2200Project {
 	public HashMap<Integer,String> mapA;
 	public HashMap<String,Integer> mapB;
 	public HashMap<Integer,Boolean> visited;
-	public boolean[][] bitCheck;
+	public int[][] bitCheck;
 	public int[][] adjacency;
 	//private ArrayList<Int> neighbours;
 
@@ -331,42 +331,65 @@ public class MyCITS2200Project implements CITS2200Project {
 		return (((1<<n) & binNumber)==0);
 	}
 
-	public int getNext (int n, int binNumber) {
+	public int[] getNext (int n, int binNumber) {
 
+		//create a returnArray with current parent as n and current state as binNumber
+		int[] returnArray = new int[]{n,binNumber};
+		
 		System.out.println("");
 		System.out.println("Starting search with current node: " + Integer.toString(n));
 		System.out.println("and binary string: " + Integer.toBinaryString(binNumber));
 		System.out.println("");
 
+		//check current state is failure or endstate
 		if(binNumber==-1 || binNumber==(1<<graph.size())-1){
-			return binNumber;
+			return returnArray;
 		}
+		//attempt to branch one node further in current path
 		for(int i=0; i<graph.size(); i++) {
+			//if node i already in path, skip processing
 			if(!notIn(i,binNumber)) {
 				System.out.println("continued as " + Integer.toString(i) + " was already in the string");
 				continue;
 			}
-			if(bitCheck[i][setNth1(binNumber,i)]) {
-				System.out.println("very sad");
-				return(-1);
-			}
-			if(adjacency[i][n]==1) {
+			//if node i not in path, check if node i is adjacent to node n
+			else if(adjacency[i][n]==1) {
+				//set state to state+parent
 				binNumber=setNth1(binNumber,i);
-				bitCheck[i][binNumber]=true;
+				//set returnArray state to state+parent
+				returnArray[1] = binNumber;
+				//record parent and state+parent in bitcheck array with value equal to child
+				bitCheck[i][binNumber]=n;
 				System.out.println("boutta recurse");
-				int tempSolution = getNext(i,binNumber);
-				System.out.println(Integer.toBinaryString(tempSolution));
-				if(tempSolution==(1<<graph.size())-1) {
+				//create an array to hold the result of recursive call
+				int[] tempSolution = getNext(i,binNumber);
+				System.out.println(Integer.toBinaryString(tempSolution[1]));
+				//check if recursive call state is equal to end state and if so, return it
+				if(tempSolution[1]==(1<<graph.size())-1) {
 					return tempSolution;
 				}
-				binNumber=setNth0(binNumber,i);
+				//if recursive calls don't lead to the endstate, revert changes to binNumber
+				binNumber = setNth0(binNumber,i);
+				returnArray[1]= binNumber;
 			}
 		}
 		System.out.println("");
 		System.out.println("recursion complete");
 		System.out.println(Integer.toBinaryString(binNumber));
 		System.out.println("");
-		return binNumber;
+		return returnArray;
+	}
+
+	public String[] pathFetcher(int parent, int state) {
+		
+		String[] path = new String[graph.size()];
+		for(int i=0; i<graph.size(); i++) {
+			path[i] = mapA.get(parent);
+			int tempParent = bitCheck[parent][state];
+			state = setNth0(state,parent);
+			parent = tempParent;
+		}
+		return path;
 	}
 
 	public String[] getHamiltonianPath() {
@@ -374,17 +397,18 @@ public class MyCITS2200Project implements CITS2200Project {
 		final int END_STATE = (1<<graph.size())-1;
 		System.out.println(Integer.toBinaryString(END_STATE));
 		printMatrix(adjacency = getAdjMatrix());
-		bitCheck = new boolean[graph.size()][1<<graph.size()];
+		bitCheck = new int[graph.size()][1<<graph.size()];
 
-		int result;
-		for(int i=0; i<graph.size(); i++) {
-			result = getNext(i,1<<i);
-			if(result==END_STATE) {
-				System.out.println("success");
-			}
+		int[] result;
+		String[] finalString = null;
+//		for(int i=0; i<graph.size(); i++) {
+		result = getNext(4,1<<4);
+		if(result[1]==END_STATE) {
+			finalString = pathFetcher(result[0], result[1]);
+			System.out.println("success");
 		}
-		return null;
-
+//		}
+		return finalString;
 	}
 
 
