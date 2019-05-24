@@ -352,8 +352,12 @@ public class MyCITS2200Project implements CITS2200Project {
 				System.out.println("continued as " + Integer.toString(i) + " was already in the string");
 				continue;
 			}
+			if(bitCheck[i][setNth1(binNumber,i)]!=0) {
+				returnArray[1]=-1;
+				return returnArray;
+			}
 			//if node i not in path, check if node i is adjacent to node n
-			else if(adjacency[i][n]==1) {
+			if(adjacency[i][n]==1) {
 				//set state to state+parent
 				binNumber=setNth1(binNumber,i);
 				//set returnArray state to state+parent
@@ -401,13 +405,17 @@ public class MyCITS2200Project implements CITS2200Project {
 
 		int[] result;
 		String[] finalString = null;
-//		for(int i=0; i<graph.size(); i++) {
-		result = getNext(4,1<<4);
-		if(result[1]==END_STATE) {
-			finalString = pathFetcher(result[0], result[1]);
-			System.out.println("success");
+		for(int i=0; i<graph.size(); i++) {
+			result = getNext(i,1<<i);
+			if(result[1]==END_STATE) {
+				finalString = pathFetcher(result[0], result[1]);
+				System.out.println("success");
+			}
 		}
-//		}
+		if(finalString==null) {
+			String[] s = new String[]{"No Path Exists"};
+			finalString = s;
+		}
 		return finalString;
 	}
 
