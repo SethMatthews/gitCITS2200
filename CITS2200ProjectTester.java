@@ -23,7 +23,7 @@ public class CITS2200ProjectTester {
 	public static void main(String[] args) {
 		// Change this to be the path to the graph file.
 		
-		String pathToGraphFile = "/Users/samuel/Documents/GitHub/gitCITS2200/smallgraph.txt"; //SAM MAC PATH
+		String pathToGraphFile = "/Users/samuel/Documents/GitHub/gitCITS2200/example_graph.txt"; //SAM MAC PATH
 		//String pathToGraphFile = "C:/Users/User/Documents/GitHub/gitCITS2200/example_graph.txt"; //SAM PC PATH
 		// Create an instance of your implementation.
 		MyCITS2200Project proj = new MyCITS2200Project();
@@ -42,12 +42,12 @@ public class CITS2200ProjectTester {
 		//}
 		String[][] cc = proj.getStronglyConnectedComponents();
 		for(int i=0; i<cc.length; i++) {
-			for(int j=0; j<cc.length; j++) {
+			for(int j=0; j<cc[i].length; j++) {
 				System.out.print(cc[i][j]+" ");
 			}
 			System.out.println("");		
 		}
-		proj.getHamiltonianPath();
+		//proj.getHamiltonianPath();
 
 
 		// Write your own tests!

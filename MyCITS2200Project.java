@@ -269,14 +269,12 @@ public class MyCITS2200Project implements CITS2200Project {
 
     //converts the stack returned by the secondary DFS on the Transposed graph into the required 2D string array
     public String[][] sccConversion (ArrayList<Stack<Integer>> components) {
-    	String[][] convertedComponents = new String[graph.size()][graph.size()];
+    	String[][] convertedComponents = new String[components.size()][];
     	for(int i=0; i<components.size(); i++) {
-    		int j=0;
     		Stack<Integer> currStack = components.get(i);
-    		while(!currStack.empty()) {
-    			String url = mapA.get(currStack.pop());
-    			convertedComponents[i][j] = url;
-    			j++;
+    		convertedComponents[i] = new String[currStack.size()];
+    		for(int j=0;!currStack.empty(); j++) {
+    			convertedComponents[i][j] = mapA.get(currStack.pop());
     		}
     	}
     	return convertedComponents;
@@ -309,9 +307,7 @@ public class MyCITS2200Project implements CITS2200Project {
 			if(!visited.containsKey(currNode)) {
 				Stack<Integer> tempStack = new Stack<Integer>();
 				tempStack = depthFirstSearch(currNode,tempStack,graphTranspose);
-				if(tempStack.size()>1) {
-					alComponents.add(tempStack);
-				}
+				alComponents.add(tempStack);
 			}
 		}
 		//convert components to the required form and return them
