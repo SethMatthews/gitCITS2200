@@ -17,7 +17,6 @@ public class MyCITS2200Project implements CITS2200Project {
 	public HashMap<Integer,Boolean> visited;
 	public int[][] bitCheck;
 	public int[][] adjacency;
-	//private ArrayList<Int> neighbours;
 
 	public MyCITS2200Project () {
 		this.mapA = new HashMap<Integer,String>();
@@ -25,26 +24,36 @@ public class MyCITS2200Project implements CITS2200Project {
 		this.visited = new HashMap<Integer,Boolean>();
 		this.graph= new ArrayList<ArrayList<Integer>>();	//lists of each index's neighbours
 		this.graphTranspose= new ArrayList<ArrayList<Integer>>();
-		//this.neighbours = new ArrayList<Int>();
 		}
 
-	//Seth function//
-	//adds vertice to both hashmaps
-	//hashmaps link an interger with 
+	/**
+	 * adds a vertice to both hashmaps so it can be converted from a url to its corresponding node number and back
+	 * 
+	 * @param url the URL to be tested
+	 */
 	public void addVert(String url){
 		mapB.put(url,mapB.size());
 		mapA.put(mapA.size(),url);
 
 	}
 
-	//Seth function//
-	//returns true if vertice exists
+	/**
+	 * checks if a vertice is present in mapB hashmap
+	 * 
+	 * @param url the URL to be tested
+	 * @return true if the url is present else false
+	 */
 	public boolean checkVert(String url){
 		return mapB.containsKey(url);
 	}
 
-	//assign index for new url and updates both hashmaps
-	//appends neighbour on the list located at the index respective to vertex number
+	/**
+	 * Adds an edge to the Wikipedia page graph. If the pages do not
+	 * already exist in the graph, they will be added to the graph.
+	 * 
+	 * @param urlFrom the URL which has a link to urlTo.
+	 * @param urlTo the URL which urlFrom has a link to.
+	 */
 	public void addEdge(String urlFrom, String urlTo) {
 		if (!checkVert(urlFrom)) {	//if vertex is not in hashmap already
 			addVert(urlFrom);
@@ -93,7 +102,14 @@ public class MyCITS2200Project implements CITS2200Project {
 
 	}
 
-	//gets shortest path from urlFrom to urlTo
+	/**
+	 * Finds the shorest path in number of links between two pages.
+	 * If there is no path, returns -1.
+	 * 
+	 * @param urlFrom the URL where the path should start.
+	 * @param urlTo the URL where the path should end.
+	 * @return the legnth of the shorest path in number of links followed.
+	 */
 	public int getShortestPath(String urlFrom, String urlTo) {
 		int rootNode = mapB.get(urlFrom);
 		int finalNode = mapB.get(urlTo);
@@ -151,7 +167,11 @@ public class MyCITS2200Project implements CITS2200Project {
     	System.out.println("");
     }
 
-    //Takes graph ArrayList and converts it into an adjacency list for use in the Floyd algorithm
+	/**
+	 * converts an adjacency list into an adjacency matrix
+	 *
+	 * @return the computed adjacency matrix
+	 */
 	public int[][] getAdjMatrix () {
 
 		int[][] adjacency = new int[graph.size()][graph.size()];
@@ -180,8 +200,12 @@ public class MyCITS2200Project implements CITS2200Project {
 		return adjacency;
 	}
 
-	//Finds Floyd matrix given an adjacency matrix
-	//Floyd matrix is the shortest path from any node to another
+	/**
+	 * Finds Floyd matrix given an adjacency matrix
+	 *
+	 * @param a the adjacency list required to calculate a Floyd matrix
+	 * @return the computed Floyd matrix
+	 */
 	private static int[][] getFloydMatrix (int[][] a) {
 
 		int size = a.length;
@@ -197,14 +221,26 @@ public class MyCITS2200Project implements CITS2200Project {
 		return a;
 	}
 
-	//Simple function to convert an ArrayList of Strings to a String array
+	/**
+	 * converts an ArrayList of Strings to a String array
+	 *
+	 * @param s the ArrayList of Strings corresponding to nodes that are centers in the graph
+	 * @return all centers converted into strings and stored in a string array
+	 */
 	private String[] converter(ArrayList<String> s) {
 		Object[] centers = s.toArray();
         String[] strCenters = Arrays.copyOf(centers, centers.length, String[].class);
         return strCenters;
 	}
 
-	//Function to find the vertexes that are centers of the graph
+	/**
+	 * Finds all the centers of the page graph. The order of pages
+	 * in the output does not matter. Any order is correct as long as
+	 * all the centers are in the array, and no pages that aren't centers
+	 * are in the array.
+	 * 
+	 * @return an array containing all the URLs that correspond to pages that are centers.
+	 */
 	public String[] getCenters() {
 		
 		//call to the adjacency matrix function to get the matrix needed for the floyd function
@@ -247,7 +283,14 @@ public class MyCITS2200Project implements CITS2200Project {
 		return strCenters;
 	}
 
-	//implementation of a recursive depth first search that returns a stack for further processing
+	/**
+	 * implementation of a recursive depth first search that returns a stack for further processing
+	 *
+	 * @param vertex the current vertex being searched from
+	 * @param vertStack current stack being added to by the depth first search
+	 * @param searchGraph the graph that the DFS is performed upon
+	 * @return a stack containing all objects found in the search
+	 */
 	private Stack<Integer> depthFirstSearch(int vertex, Stack<Integer> vertStack, ArrayList<ArrayList<Integer>> searchGraph) {
 
 		//find all children of the current node
@@ -267,7 +310,12 @@ public class MyCITS2200Project implements CITS2200Project {
 		return vertStack;
     } 
 
-    //converts the stack returned by the secondary DFS on the Transposed graph into the required 2D string array
+    /**
+	 * converts the stack returned by the secondary DFS on the Transposed graph into the required 2D string array
+	 *
+	 * @param components the ArrayLists of Stacks of strongly connected components
+	 * @return a jagged array where each row is an array of strongly connected components
+	 */
     public String[][] sccConversion (ArrayList<Stack<Integer>> components) {
     	String[][] convertedComponents = new String[components.size()][];
     	for(int i=0; i<components.size(); i++) {
@@ -280,7 +328,16 @@ public class MyCITS2200Project implements CITS2200Project {
     	return convertedComponents;
     }
 
-    //finds strongly connected components in the graph
+    /**
+	 * Finds all the strongly connected components of the page graph.
+	 * Every strongly connected component can be represented as an array 
+	 * containing the page URLs in the component. The return value is thus an array
+	 * of strongly connected components. The order of elements in these arrays
+	 * does not matter. Any output that contains all the strongly connected
+	 * components is considered correct.
+	 * 
+	 * @return an array containing every strongly connected component.
+	 */
 	public String[][] getStronglyConnectedComponents() {
 		
 		//create an arraylist that will eventually contain stacks of strongly connected components
@@ -315,22 +372,57 @@ public class MyCITS2200Project implements CITS2200Project {
 		return components;
 	} 
 
+	/**
+	 * changes the n'th node of the state to 0 if it was 1 or 1 if it was 0, counting from the right hand side of the state
+	 *
+	 * @param n the last node visited in the Hamiltonian path
+	 * @param binNumber the current state of nodes visited
+	 * @return the new state created when the n'th node is flipped
+	 */
 	public int flipNth (int binNumber, int n) {
 		return (binNumber ^ (1 << n));
 	}
 
+	/**
+	 * sets the n'th node of the state to 1, counting from the right hand side of the state
+	 *
+	 * @param n the last node visited in the Hamiltonian path
+	 * @param binNumber the current state of nodes visited
+	 * @return the new state created when the n'th node is set to 1
+	 */
 	public int setNth1 (int binNumber, int n) {
 		return (binNumber |= (1 << n));
 	}
 
+	/**
+	 * sets the n'th node of the state to 0, counting from the right hand side of the state
+	 *
+	 * @param n the last node visited in the Hamiltonian path
+	 * @param binNumber the current state of nodes visited
+	 * @return the new state created when the n'th node is set to 0
+	 */
 	public int setNth0 (int binNumber, int n) {
 		return (binNumber &= ~(1 << n));
 	}
 
+	/**
+	 * checks whether node n has been visited in the current state
+	 *
+	 * @param n the last node visited in the Hamiltonian path
+	 * @param binNumber the current state of nodes visited
+	 * @return True if n is not in binNumber of false if it is
+	 */
 	public boolean notIn (int n, int binNumber) {
 		return (((1<<n) & binNumber)==0);
 	}
 
+	/**
+	 * Recursive function to find the next node of a potential Hamiltonian path
+	 *
+	 * @param n the last node visited in the Hamiltonian path
+	 * @param binNumber the current state of nodes visited
+	 * @return the last node visited in the first index and the current state in the second index or -1 if the state lead to a dead end.
+	 */
 	public int[] getNext (int n, int binNumber) {
 
 		//create a returnArray with current parent as n and current state as binNumber
@@ -384,6 +476,13 @@ public class MyCITS2200Project implements CITS2200Project {
 		return returnArray;
 	}
 
+	/**
+	 * Finds the returned Hamiltonian path by backtracking from the last node visited
+	 *
+	 * @param parent the last node visited in the Hamiltonian path
+	 * @param state the current state of nodes visited
+	 * @return a Hamiltonian path of the page graph in string array form.
+	 */
 	public String[] pathFetcher(int parent, int state) {
 		
 		String[] path = new String[graph.size()];
@@ -396,6 +495,18 @@ public class MyCITS2200Project implements CITS2200Project {
 		return path;
 	}
 
+	/**
+	 * Finds a Hamiltonian path in the page graph. There may be many
+	 * possible Hamiltonian paths. Any of these paths is a correct output.
+	 * This method should never be called on a graph with more than 20
+	 * vertices. If there is no Hamiltonian path, this method will
+	 * return an empty array. The output array should contain the URLs of pages
+	 * in a Hamiltonian path. The order matters, as the elements of the
+	 * array represent this path in sequence. So the element [0] is the start
+	 * of the path, and [1] is the next page, and so on.
+	 * 
+	 * @return a Hamiltonian path of the page graph.
+	 */
 	public String[] getHamiltonianPath() {
 		
 		final int END_STATE = (1<<graph.size())-1;
