@@ -444,6 +444,7 @@ public class MyCITS2200Project implements CITS2200Project {
 				System.out.println("continued as " + Integer.toString(i) + " was already in the string");
 				continue;
 			}
+			//if this state and parent combination has been calculated before, break out of loop 
 			if(bitCheck[i][setNth1(binNumber,i)]!=0) {
 				returnArray[1]=-1;
 				return returnArray;
@@ -485,6 +486,10 @@ public class MyCITS2200Project implements CITS2200Project {
 	 */
 	public String[] pathFetcher(int parent, int state) {
 		
+		/*
+		* Use the state and parent values to crawl back through the path the
+		* getNext function took and add each node's url form to the final path
+		*/
 		String[] path = new String[graph.size()];
 		for(int i=0; i<graph.size(); i++) {
 			path[i] = mapA.get(parent);
@@ -509,6 +514,7 @@ public class MyCITS2200Project implements CITS2200Project {
 	 */
 	public String[] getHamiltonianPath() {
 		
+		//set a state integer that is x 1's where x is the number of nodes in the graph
 		final int END_STATE = (1<<graph.size())-1;
 		System.out.println(Integer.toBinaryString(END_STATE));
 		printMatrix(adjacency = getAdjMatrix());
@@ -516,13 +522,16 @@ public class MyCITS2200Project implements CITS2200Project {
 
 		int[] result;
 		String[] finalString = null;
+		//make a call to the get next function for each node
 		for(int i=0; i<graph.size(); i++) {
 			result = getNext(i,1<<i);
+			//if a result of one of the calls matches the end state, get the path and break out of the loop
 			if(result[1]==END_STATE) {
 				finalString = pathFetcher(result[0], result[1]);
-				System.out.println("success");
+				break;
 			}
 		}
+		//if no path has been found, set the string array to reflect that
 		if(finalString==null) {
 			String[] s = new String[]{"No Path Exists"};
 			finalString = s;
