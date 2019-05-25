@@ -16,7 +16,6 @@ public class MyCITS2200Project implements CITS2200Project {
 	public HashMap<String,Integer> mapB;
 	public HashMap<Integer,Boolean> visited;
 	public int[][] bitCheck;
-	public int[][] adjacency;
 
 	public MyCITS2200Project () {
 		this.mapA = new HashMap<Integer,String>();
@@ -168,60 +167,6 @@ public class MyCITS2200Project implements CITS2200Project {
     }
 
 	/**
-	 * converts an adjacency list into an adjacency matrix
-	 *
-	 * @return the computed adjacency matrix
-	 */
-	public int[][] getAdjMatrix () {
-
-		int[][] adjacency = new int[graph.size()][graph.size()];
-		
-		//Loop through all nodes and their children to test for adjacency between nodes
-		//0 indicates adjacency[x][x] (a vertexes adjacency to itself)
-		//1 indicates that x is adjacent to y for adjacency[x][y]
-		//999 indicates y is non adjacent to y for adjacency[x][y]
-		for(int i=0; i<graph.size(); i++) {
-			ArrayList<Integer> adjacencyList = graph.get(i);
-			for(int j=0; j<graph.size(); j++) {
-				if(i==j) {
-					adjacency[i][j]=0;
-				}
-				else if(adjacencyList==null) {
-					adjacency[i][j]=999;
-				}
-				else if(adjacencyList.contains(j)){
-					adjacency[i][j]=1;
-				}
-				else {
-					adjacency[i][j]=999;
-				}
-			}
-		}
-		return adjacency;
-	}
-
-	/**
-	 * Finds Floyd matrix given an adjacency matrix
-	 *
-	 * @param a the adjacency list required to calculate a Floyd matrix
-	 * @return the computed Floyd matrix
-	 */
-	private static int[][] getFloydMatrix (int[][] a) {
-
-		int size = a.length;
-		for (int i=0; i<size; i++) {
-			for (int j=0; j<size; j++) {
-				for (int k=0; k<size; k++) {
-					if(a[i][k] + a[k][j] < a[i][j]) {
-						a[i][j] = Math.min(a[i][j], a[i][k] + a[k][j]);		
-					}
-				}
-			}	
-		}
-		return a;
-	}
-
-	/**
 	 * converts an ArrayList of Strings to a String array
 	 *
 	 * @param s the ArrayList of Strings corresponding to nodes that are centers in the graph
@@ -231,6 +176,47 @@ public class MyCITS2200Project implements CITS2200Project {
 		Object[] centers = s.toArray();
         String[] strCenters = Arrays.copyOf(centers, centers.length, String[].class);
         return strCenters;
+	}
+
+	
+	public int[][] BFS() {
+
+		int[][] distanceList = new int[graph.size()][graph.size()];
+		for(int i=0; i<graph.size(); i++) {
+			
+			//Queue to hold discovered vertexes that need to be explored in the depth first search
+			Queue<Integer> queue = new LinkedList<Integer>();
+
+			//adds root node to the queue and sets its depth to 0 in the HashMap
+			queue.add(i);
+			distanceList[i][i]=0;
+
+			//Breadth first search implementation to test form matches to the goal node
+			while(!(queue.size()==0)) {
+				int currentNode = queue.remove();
+
+				//tests if the current node has children and if so, adds unexplored nodes to the queue to be searched
+				ArrayList<Integer> currentNodeChildren = graph.get(currentNode);
+				if(currentNodeChildren!=null) {
+					for(Integer j=0; j<currentNodeChildren.size(); j++) {
+						int currentChild = currentNodeChildren.get(j);
+						if(i==currentChild) {
+							distanceList[i][currentChild]=0;
+						}
+						else if(distanceList[i][currentChild]==0) {
+							queue.add(currentChild);
+							distanceList[i][currentChild] = distanceList[i][currentNode]+1;
+						}
+					}
+				}
+			}
+			for(int j=0; j<graph.size(); j++){
+				if(distanceList[i][j]==0 && i!=j) {
+					distanceList[i][j]=999;
+				}
+			}
+		}
+		return distanceList;
 	}
 
 	/**
@@ -243,28 +229,26 @@ public class MyCITS2200Project implements CITS2200Project {
 	 */
 	public String[] getCenters() {
 		
-		//call to the adjacency matrix function to get the matrix needed for the floyd function
-		adjacency = getAdjMatrix();
-		//call to the floyd function to return the matrix needed to calculate centers
-		int[][] floyd = getFloydMatrix(adjacency);
+		//call to the distances function to return the matrix needed to calculate centers
+		int[][] distances = BFS();
 
 		//set initial most jumps variable to set the number a potential center has to 'beat'
 		int mostJumps = 999;
 
-		//for each row of the floyd matrix (node of the graph), test whether it is a center
+		//for each row of the distances matrix (node of the graph), test whether it is a center
 		ArrayList<String> potentialCenter = new ArrayList<String>();
-		for (int i=0; i<floyd.length; i++) {
+		for (int i=0; i<distances.length; i++) {
 			int potentialMJ = 0;
-			for(int j=0; j<floyd.length; j++) {
+			for(int j=0; j<distances.length; j++) {
 				//first, test if any values are 999 indicating a node is unreachable or if any node is larger than the recorded MJ. If true, break and process the next node
-				if(floyd[i][j] == 999 || floyd[i][j] > mostJumps) {
+				if(distances[i][j] == 999 || distances[i][j] > mostJumps) {
 					break;
 				}
 				//take note of the highest value in the node and store it in potentialMJ
-				else if(floyd[i][j]>potentialMJ) {
-					potentialMJ = floyd[i][j];
+				else if(distances[i][j]>potentialMJ) {
+					potentialMJ = distances[i][j];
 				}
-				if(j==floyd.length-1) {
+				if(j==distances.length-1) {
 					//if PotentialMJ is less than mostJumps, clear the pottentialCenter ArrayList and add the current node as a better potential center
 					if(potentialMJ<mostJumps) {
 						mostJumps = potentialMJ;
@@ -279,7 +263,13 @@ public class MyCITS2200Project implements CITS2200Project {
 			}
 		}
 		//convert and return the final list of centers
-		String[] strCenters = converter(potentialCenter);
+		String[] strCenters;
+		if(!potentialCenter.isEmpty()) {
+			strCenters = converter(potentialCenter);
+		}
+		else{
+			strCenters = new String[]{"No centers found"};
+		}
 		return strCenters;
 	}
 
@@ -438,19 +428,21 @@ public class MyCITS2200Project implements CITS2200Project {
 			return returnArray;
 		}
 		//attempt to branch one node further in current path
-		for(int i=0; i<graph.size(); i++) {
-			//if node i already in path, skip processing
-			if(!notIn(i,binNumber)) {
-				System.out.println("continued as " + Integer.toString(i) + " was already in the string");
-				continue;
-			}
-			//if this state and parent combination has been calculated before, break out of loop 
-			if(bitCheck[i][setNth1(binNumber,i)]!=0) {
-				returnArray[1]=-1;
-				return returnArray;
-			}
-			//if node i not in path, check if node i is adjacent to node n
-			if(adjacency[i][n]==1) {
+		ArrayList<Integer> children = graphTranspose.get(n);
+		if(children!=null) {
+			for(int child=0; child<children.size(); child++) {
+				int i = children.get(child);
+				//if node i already in path, skip processing
+				if(!notIn(i,binNumber)) {
+					System.out.println("continued as " + Integer.toString(i) + " was already in the string");
+					continue;
+				}
+				//if this state and parent combination has been calculated before, break out of loop 
+				if(bitCheck[i][setNth1(binNumber,i)]!=0) {
+					returnArray[1]=-1;
+					return returnArray;
+				}
+				//if node i not in path, check if node i is adjacent to node n
 				//set state to state+parent
 				binNumber=setNth1(binNumber,i);
 				//set returnArray state to state+parent
@@ -517,7 +509,6 @@ public class MyCITS2200Project implements CITS2200Project {
 		//set a state integer that is x 1's where x is the number of nodes in the graph
 		final int END_STATE = (1<<graph.size())-1;
 		System.out.println(Integer.toBinaryString(END_STATE));
-		printMatrix(adjacency = getAdjMatrix());
 		bitCheck = new int[graph.size()][1<<graph.size()];
 
 		int[] result;
