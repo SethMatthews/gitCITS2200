@@ -63,7 +63,6 @@ public class MyCITS2200Project implements CITS2200Project {
 
 		int vertIndexTo = mapB.get(urlTo); //convert urlTo to an index through hashmap
 		int vertIndexFrom = mapB.get(urlFrom); //convert urlFrom to an index through hashmap
-		System.out.println(Integer.toString(vertIndexFrom) + ", " + Integer.toString(vertIndexTo));
 
 		while(graph.size()<mapA.size()) {
 			graph.add(null);	
@@ -72,13 +71,9 @@ public class MyCITS2200Project implements CITS2200Project {
 			ArrayList<Integer> newVert = new ArrayList<Integer>();
 			newVert.add(vertIndexTo);
 			graph.set(vertIndexFrom, newVert);
-			System.out.println(graph.get(vertIndexFrom));
-			
-			//System.out.println("Add successful!");
 		}
 		else {
 			graph.get(vertIndexFrom).add(vertIndexTo); //appends vertex(urlTo) in vertex(urlFrom) neighbour list
-			System.out.println(graph.get(vertIndexFrom));
 		}
 
 		while(graphTranspose.size()<mapA.size()){
@@ -88,16 +83,10 @@ public class MyCITS2200Project implements CITS2200Project {
 			ArrayList<Integer> newVertTranspose = new ArrayList<Integer>();
 			newVertTranspose.add(vertIndexFrom);
 			graphTranspose.set(vertIndexTo,newVertTranspose);
-			System.out.println(graphTranspose.get(vertIndexTo));
 		}
 		else {
 			graphTranspose.get(vertIndexTo).add(vertIndexFrom);
-			System.out.println(graphTranspose.get(vertIndexTo));
 		}
-		//System.out.println(graph.get(vertIndexFrom));
-		//System.out.println(graphTranspose.get(vertIndexTo));
-		System.out.println("Graph: " + Integer.toString(graph.size()) + ", TransposeGraph: " + Integer.toString(graphTranspose.size()));
-		System.out.println("");
 
 	}
 
@@ -112,6 +101,11 @@ public class MyCITS2200Project implements CITS2200Project {
 	public int getShortestPath(String urlFrom, String urlTo) {
 		int rootNode = mapB.get(urlFrom);
 		int finalNode = mapB.get(urlTo);
+
+		//return 0 if calculating the shortest path from a node to itself
+		if(rootNode==finalNode) {
+			return 0;
+		}
 		
 		//HashMap used to store depth of each node from root node
 		HashMap<Integer,Integer> depth = new HashMap<Integer,Integer>();
@@ -147,25 +141,6 @@ public class MyCITS2200Project implements CITS2200Project {
 
 	}
 
-
-	//Function for printing matrixes (NOT FOR FINAL PROGRAM)
-	public void printMatrix(int[][] matrix) {
-	    for (int row = 0; row < matrix.length; row++) {
-	        for (int col = 0; col < matrix[row].length; col++) {
-	            System.out.printf("%4d", matrix[row][col]);
-	        }
-	        System.out.println();
-	    }
-    }
-
-    //Function for printing ArrayLists (NOT FOR FINAL PROGRAM)
-    public void printArrayList(ArrayList<ArrayList<Integer>> a) {
-    	for(int i=0; i<a.size(); i++) {
-    		System.out.println(a.get(i));
-    	}
-    	System.out.println("");
-    }
-
 	/**
 	 * converts an ArrayList of Strings to a String array
 	 *
@@ -178,7 +153,11 @@ public class MyCITS2200Project implements CITS2200Project {
         return strCenters;
 	}
 
-	
+	/**
+	 * performs a breadth first search from each node in the graph to find the shortest path from each node to each other node
+	 *
+	 * @return an array containing the shortest path from each node to each other node
+	 */
 	public int[][] BFS() {
 
 		int[][] distanceList = new int[graph.size()][graph.size()];
@@ -417,12 +396,6 @@ public class MyCITS2200Project implements CITS2200Project {
 
 		//create a returnArray with current parent as n and current state as binNumber
 		int[] returnArray = new int[]{n,binNumber};
-		
-		System.out.println("");
-		System.out.println("Starting search with current node: " + Integer.toString(n));
-		System.out.println("and binary string: " + Integer.toBinaryString(binNumber));
-		System.out.println("");
-
 		//check current state is failure or endstate
 		if(binNumber==-1 || binNumber==(1<<graph.size())-1){
 			return returnArray;
@@ -434,7 +407,6 @@ public class MyCITS2200Project implements CITS2200Project {
 				int i = children.get(child);
 				//if node i already in path, skip processing
 				if(!notIn(i,binNumber)) {
-					System.out.println("continued as " + Integer.toString(i) + " was already in the string");
 					continue;
 				}
 				//if this state and parent combination has been calculated before, break out of loop 
@@ -449,10 +421,9 @@ public class MyCITS2200Project implements CITS2200Project {
 				returnArray[1] = binNumber;
 				//record parent and state+parent in bitcheck array with value equal to child
 				bitCheck[i][binNumber]=n;
-				System.out.println("boutta recurse");
+				//System.out.println("boutta recurse");
 				//create an array to hold the result of recursive call
 				int[] tempSolution = getNext(i,binNumber);
-				System.out.println(Integer.toBinaryString(tempSolution[1]));
 				//check if recursive call state is equal to end state and if so, return it
 				if(tempSolution[1]==(1<<graph.size())-1) {
 					return tempSolution;
@@ -462,10 +433,6 @@ public class MyCITS2200Project implements CITS2200Project {
 				returnArray[1]= binNumber;
 			}
 		}
-		System.out.println("");
-		System.out.println("recursion complete");
-		System.out.println(Integer.toBinaryString(binNumber));
-		System.out.println("");
 		return returnArray;
 	}
 
@@ -508,7 +475,6 @@ public class MyCITS2200Project implements CITS2200Project {
 		
 		//set a state integer that is x 1's where x is the number of nodes in the graph
 		final int END_STATE = (1<<graph.size())-1;
-		System.out.println(Integer.toBinaryString(END_STATE));
 		bitCheck = new int[graph.size()][1<<graph.size()];
 
 		int[] result;
@@ -524,7 +490,7 @@ public class MyCITS2200Project implements CITS2200Project {
 		}
 		//if no path has been found, set the string array to reflect that
 		if(finalString==null) {
-			String[] s = new String[]{"No Path Exists"};
+			String[] s = new String[]{};
 			finalString = s;
 		}
 		return finalString;
